@@ -34,18 +34,17 @@ namespace AppDownloader.Apps
         {
             var startInfo = new ProcessStartInfo
             {
-                FileName = InstallerPath,
-                Arguments = "/S", // Silent install
+                FileName = "msiexec.exe",
+                Arguments = $"/i \"{InstallerPath}\" /quiet",
                 UseShellExecute = true,
-                Verb = "runas" // Run as administrator
+                Verb = "runas"
             };
-        
+
             using (var process = Process.Start(startInfo))
             {
                 process?.WaitForExit();
             }
         }
-
         // Check Windows Registry for Epic Games installation
         private bool IsProgramInstalled(string programName)
         {

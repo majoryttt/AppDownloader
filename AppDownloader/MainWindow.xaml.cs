@@ -8,6 +8,7 @@ namespace AppDownloader;
 public partial class MainWindow : Window
 {
     // Initialize apps
+    private readonly Chrome _chrome;
     private readonly Discord _discord;
     private readonly Telegram _telegram;
     private readonly Steam _steam;
@@ -15,11 +16,14 @@ public partial class MainWindow : Window
     private readonly DeepL _deepL;
     private readonly NekoBox _nekoBox;
     private readonly PowerToys _powerToys;
+    private readonly JetBrainsToolbox _jetBrainsToolbox;
+    private readonly SteelSeriesGG _steelSeriesGG;
 
     public MainWindow()
     {
         // Initialize components
         InitializeComponent();
+        _chrome = new Chrome();
         _discord = new Discord();
         _telegram = new Telegram();
         _steam = new Steam();
@@ -27,6 +31,8 @@ public partial class MainWindow : Window
         _deepL = new DeepL();
         _nekoBox = new NekoBox();
         _powerToys = new PowerToys();
+        _jetBrainsToolbox = new JetBrainsToolbox();
+        _steelSeriesGG = new SteelSeriesGG();
     }
     // Main function
     // DragZone
@@ -55,6 +61,14 @@ public partial class MainWindow : Window
         {
             var tasks = new[]
             {
+                Task.Run(() =>
+                {
+                    Dispatcher.Invoke(() => ChromeStatus.Text = "Checking... 0%");
+                    var result = _chrome.FindProgramExecutable("chrome.exe",
+                        progress => Dispatcher.Invoke(() => ChromeStatus.Text = $"Checking... {progress}%"));
+                    Dispatcher.Invoke(() => ChromeStatus.Text = result ? "Installed" : "Not Installed");
+                }),
+                
                 Task.Run(() =>
                 {
                     Dispatcher.Invoke(() => DiscordStatus.Text = "Checking... 0%");
@@ -109,7 +123,23 @@ public partial class MainWindow : Window
                     var result = _powerToys.FindProgramExecutable("PowerToys.exe",
                         progress => Dispatcher.Invoke(() => PowerToysStatus.Text = $"Checking... {progress}%"));
                     Dispatcher.Invoke(() => PowerToysStatus.Text = result ? "Installed" : "Not Installed");
-                })
+                }),
+                
+                Task.Run(() =>
+                {
+                    Dispatcher.Invoke(() => JetBrainsToolboxStatus.Text = "Checking... 0%");
+                    var result = _jetBrainsToolbox.FindProgramExecutable("PowerToys.exe",
+                        progress => Dispatcher.Invoke(() => JetBrainsToolboxStatus.Text = $"Checking... {progress}%"));
+                    Dispatcher.Invoke(() => JetBrainsToolboxStatus.Text = result ? "Installed" : "Not Installed");
+                }),
+                
+                Task.Run(() =>
+                {
+                    Dispatcher.Invoke(() => SteelSeriesGgStatus.Text = "Checking... 0%");
+                    var result = _steelSeriesGG.FindProgramExecutable("SteelSeries.exe",
+                        progress => Dispatcher.Invoke(() => SteelSeriesGgStatus.Text = $"Checking... {progress}%"));
+                    Dispatcher.Invoke(() => SteelSeriesGgStatus.Text = result ? "Installed" : "Not Installed");
+                }),
             };
 
             await Task.WhenAll(tasks);
@@ -123,6 +153,24 @@ public partial class MainWindow : Window
     // InstallSelected
     private async void InstallSelected_Click(object sender, RoutedEventArgs e)
     {
+        if (ChromeCheckBox.IsChecked == true && !_chrome.IsInstalled())
+        {
+            try
+            {
+                ChromeStatus.Text = "Installing...";
+                await Task.Run(() =>
+                {
+                    _chrome.Download();
+                    _chrome.Install();
+                });
+                ChromeStatus.Text = "Installed";
+            }
+            catch (Exception ex)
+            {
+                ChromeStatus.Text = $"Error: {ex.Message}";
+            }
+        }
+        
         if (DiscordCheckBox.IsChecked == true && !_discord.IsInstalled())
         {
             try
@@ -248,11 +296,49 @@ public partial class MainWindow : Window
                 PowerToysStatus.Text = $"Error: {ex.Message}";
             }
         }
+
+        if (JetBrainsToolboxCheckBox.IsChecked == true && !_jetBrainsToolbox.IsInstalled())
+        {
+            try
+            {
+                JetBrainsToolboxStatus.Text = "Installing...";
+                await Task.Run(() =>
+                {
+                    _jetBrainsToolbox.Download();
+                    _jetBrainsToolbox.Install();
+                });
+                JetBrainsToolboxStatus.Text = "Installed";
+            }
+            catch (Exception ex)
+            {
+                JetBrainsToolboxStatus.Text = $"Error: {ex.Message}";
+            }
+        }
+
+        if (SteelSeriesGgCheckBox.IsChecked == true && !_steelSeriesGG.IsInstalled())
+        {
+            try
+            {
+                SteelSeriesGgStatus.Text = "Installing...";
+                await Task.Run(() =>
+                {
+                    _steelSeriesGG.Download();
+                    _steelSeriesGG.Install();
+                });
+            }
+            catch (Exception ex)
+            {
+                SteelSeriesGgStatus.Text = $"Error: {ex.Message}";
+            }
+        }
     }
 
     // SelectNotInstalled
     private void SelectNotInstalled_Click(object sender, RoutedEventArgs e)
     {
+        if (ChromeStatus.Text == "Not Installed")
+            ChromeCheckBox.IsChecked = true;
+        
         if (DiscordStatus.Text == "Not Installed")
             DiscordCheckBox.IsChecked = true;
         
@@ -273,5 +359,11 @@ public partial class MainWindow : Window
         
         if (PowerToysStatus.Text == "Not Installed")
             PowerToysCheckBox.IsChecked = true;
+        
+        if (JetBrainsToolboxStatus.Text == "Not Installed")
+            JetBrainsToolboxCheckBox.IsChecked = true;
+        
+        if (SteelSeriesGgStatus.Text == "Not Installed")
+            SteelSeriesGgCheckBox.IsChecked = true;
     }
 }

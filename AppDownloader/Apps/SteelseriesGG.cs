@@ -3,24 +3,22 @@ using System.IO;
 using System.Net;
 using System.Diagnostics;
 using Microsoft.Win32;
+using System.Collections.Generic;
 
 namespace AppDownloader.Apps
 {
-    public class PowerToys
+    public class SteelSeriesGG
     {
-        // Name of the program
-        private const string ProgramName = "PowerToys";
-        private const string ExecutableName = "PowerToys.exe";
-        private const string DownloadUrl = "https://github.com/microsoft/PowerToys/releases/download/v0.68.0/PowerToysSetup-0.68.0-x64.exe";
-        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "PowerToysSetup-0.68.0-x64.exe");
+        private const string ProgramName = "SteelSeries GG";
+        private const string ExecutableName = "SteelSeriesGG.exe";
+        private const string DownloadUrl = "https://steelseries.com/gg/downloads/gg/latest/windows";
+        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "SteelSeriesGGSetup.exe");
         
-        // Check if the program is installed
         public bool IsInstalled()
         {
             return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
         }
         
-        // Download the program
         public void Download()
         {
             using (var client = new WebClient())
@@ -29,15 +27,14 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Install the program
         public void Install()
         {
             var startInfo = new ProcessStartInfo
             {
                 FileName = InstallerPath,
-                Arguments = "/S", // Silent install
+                Arguments = "/S",
                 UseShellExecute = true,
-                Verb = "runas" // Run as administrator
+                Verb = "runas"
             };
         
             using (var process = Process.Start(startInfo))
@@ -46,7 +43,6 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Method to check if the program is installed
         private bool IsProgramInstalled(string programName)
         {
             string[] registryPaths =
@@ -55,7 +51,6 @@ namespace AppDownloader.Apps
                 @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
             };
 
-            // Loop through the registry paths
             foreach (var registryPath in registryPaths)
             {
                 using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
@@ -80,67 +75,39 @@ namespace AppDownloader.Apps
 
             return false;
         }
-
-        // Method to find the executable file
         public bool FindProgramExecutable(string executableName, Action<int> progressCallback)
         {
-            // Define common paths to search for the executable file
-            var commonPaths = new List<string>
-            {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PowerToys"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PowerToys"),
-                @"C:\Program Files\PowerToys",
-                @"C:\Program Files (x86)\PowerToys"
-            };
-
-            // Quick check in common locations
-            foreach (var path in commonPaths)
-            {
-                if (Directory.Exists(path))
-                {
-                    string execPath = Path.Combine(path, executableName);
-                    if (File.Exists(execPath))
-                    {
-                        progressCallback?.Invoke(100);
-                        return true;
-                    }
-                }
-            }
-
-            // Deep search in system drives if not found in common locations
-            try
-            {
-                string[] drives = Directory.GetLogicalDrives();
-                int totalDrives = drives.Length;
-
-                for (int i = 0; i < totalDrives; i++)
-                {
-                    string drive = drives[i];
-                    if (!Directory.Exists(drive)) continue;
-
-                    progressCallback?.Invoke((i * 100) / totalDrives);
-
-                    if (QuickSearchInDrive(drive, executableName))
-                    {
-                        progressCallback?.Invoke(100);
-                        return true;
-                    }
-                }
-            }
-            catch (Exception)
+            string exactPath = @"C:\Program Files\SteelSeries\GG\SteelSeriesGG.exe";
+            if (File.Exists(exactPath))
             {
                 progressCallback?.Invoke(100);
-                return false;
+                return true;
+            }
+
+            var commonPaths = new List<string>
+            {
+                @"C:\Program Files\SteelSeries\GG",
+                @"C:\Program Files (x86)\SteelSeries\GG",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "SteelSeries", "GG"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "SteelSeries", "GG")
+            };
+
+            foreach (var path in commonPaths)
+            {
+                string execPath = Path.Combine(path, executableName);
+                Debug.WriteLine($"Checking path: {execPath}");
+                if (File.Exists(execPath))
+                {
+                    progressCallback?.Invoke(100);
+                    return true;
+                }
             }
 
             progressCallback?.Invoke(100);
             return false;
         }
-
-        // Method to perform a quick search in a drive
         private bool QuickSearchInDrive(string drivePath, string executableName)
         {
-            // Perform a quick search in the drive
             try
             {
                 var searchQueue = new Queue<string>();

@@ -6,21 +6,18 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class PowerToys
+    public class Obsidian
     {
-        // Name of the program
-        private const string ProgramName = "PowerToys";
-        private const string ExecutableName = "PowerToys.exe";
-        private const string DownloadUrl = "https://github.com/microsoft/PowerToys/releases/download/v0.68.0/PowerToysSetup-0.68.0-x64.exe";
-        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "PowerToysSetup-0.68.0-x64.exe");
+        private const string ProgramName = "Obsidian";
+        private const string ExecutableName = "Obsidian.exe";
+        private const string DownloadUrl = "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.5.3/Obsidian.1.5.3.exe";
+        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "Obsidian.1.5.3.exe");
         
-        // Check if the program is installed
         public bool IsInstalled()
         {
             return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
         }
         
-        // Download the program
         public void Download()
         {
             using (var client = new WebClient())
@@ -29,15 +26,14 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Install the program
         public void Install()
         {
             var startInfo = new ProcessStartInfo
             {
                 FileName = InstallerPath,
-                Arguments = "/S", // Silent install
+                Arguments = "/S",
                 UseShellExecute = true,
-                Verb = "runas" // Run as administrator
+                Verb = "runas"
             };
         
             using (var process = Process.Start(startInfo))
@@ -46,7 +42,6 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Method to check if the program is installed
         private bool IsProgramInstalled(string programName)
         {
             string[] registryPaths =
@@ -55,7 +50,6 @@ namespace AppDownloader.Apps
                 @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
             };
 
-            // Loop through the registry paths
             foreach (var registryPath in registryPaths)
             {
                 using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
@@ -81,19 +75,16 @@ namespace AppDownloader.Apps
             return false;
         }
 
-        // Method to find the executable file
         public bool FindProgramExecutable(string executableName, Action<int> progressCallback)
         {
-            // Define common paths to search for the executable file
             var commonPaths = new List<string>
             {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PowerToys"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PowerToys"),
-                @"C:\Program Files\PowerToys",
-                @"C:\Program Files (x86)\PowerToys"
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Obsidian"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Obsidian"),
+                @"C:\Program Files\Obsidian",
+                @"C:\Program Files (x86)\Obsidian"
             };
 
-            // Quick check in common locations
             foreach (var path in commonPaths)
             {
                 if (Directory.Exists(path))
@@ -107,7 +98,6 @@ namespace AppDownloader.Apps
                 }
             }
 
-            // Deep search in system drives if not found in common locations
             try
             {
                 string[] drives = Directory.GetLogicalDrives();
@@ -137,10 +127,8 @@ namespace AppDownloader.Apps
             return false;
         }
 
-        // Method to perform a quick search in a drive
         private bool QuickSearchInDrive(string drivePath, string executableName)
         {
-            // Perform a quick search in the drive
             try
             {
                 var searchQueue = new Queue<string>();

@@ -11,7 +11,7 @@ namespace AppDownloader.Apps
         private const string ProgramName = "Telegram"; // Name of the program
         private const string ExecutableName = "Telegram.exe"; // Name of the executable file
         private const string DownloadUrl = "https://github.com/telegramdesktop/tdesktop/releases/download/v5.9.0/tsetup-x64.5.9.0.exe"; // URL to download the installer
-        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "tsetup.exe"); // Path to the installer file
+        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "tsetup-x64.5.9.0.exe"); // Path to the installer file
 
         // Check if the program is installed
         public bool IsInstalled()

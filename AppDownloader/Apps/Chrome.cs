@@ -6,21 +6,21 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class PowerToys
+    public class Chrome
     {
-        // Name of the program
-        private const string ProgramName = "PowerToys";
-        private const string ExecutableName = "PowerToys.exe";
-        private const string DownloadUrl = "https://github.com/microsoft/PowerToys/releases/download/v0.68.0/PowerToysSetup-0.68.0-x64.exe";
-        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "PowerToysSetup-0.68.0-x64.exe");
-        
-        // Check if the program is installed
+        // Constants for DeepL application
+        private const string ProgramName = "Chrome";
+        private const string ExecutableName = "chrome.exe";
+        private const string DownloadUrl = "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B416DC6D3-8AD8-9476-8690-5A5C5C97A3FF%7D%26lang%3Den%26browser%3D4%26usagestats%3D1%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26brand%3DJJTC%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe";
+        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "ChromeSetup.exe");
+
+        // Check if DeepL is installed using file search or registry
         public bool IsInstalled()
         {
             return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
         }
-        
-        // Download the program
+
+        // Download DeepL installer from official source
         public void Download()
         {
             using (var client = new WebClient())
@@ -29,7 +29,7 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Install the program
+        // Install DeepL silently using downloaded installer
         public void Install()
         {
             var startInfo = new ProcessStartInfo
@@ -46,16 +46,14 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Method to check if the program is installed
+        // Check Windows Registry for DeepL installation
         private bool IsProgramInstalled(string programName)
         {
-            string[] registryPaths =
-            {
+            string[] registryPaths = {
                 @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
                 @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
             };
 
-            // Loop through the registry paths
             foreach (var registryPath in registryPaths)
             {
                 using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
@@ -67,7 +65,7 @@ namespace AppDownloader.Apps
                             using (RegistryKey subkey = key.OpenSubKey(subkeyName))
                             {
                                 string displayName = subkey?.GetValue("DisplayName") as string;
-                                if (!string.IsNullOrEmpty(displayName) &&
+                                if (!string.IsNullOrEmpty(displayName) && 
                                     displayName.Contains(programName, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
@@ -77,23 +75,22 @@ namespace AppDownloader.Apps
                     }
                 }
             }
-
             return false;
         }
 
-        // Method to find the executable file
+        // Search for DeepL executable with progress tracking
         public bool FindProgramExecutable(string executableName, Action<int> progressCallback)
         {
-            // Define common paths to search for the executable file
+            // Common DeepL installation paths
             var commonPaths = new List<string>
             {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PowerToys"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PowerToys"),
-                @"C:\Program Files\PowerToys",
-                @"C:\Program Files (x86)\PowerToys"
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "Chrome"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Chrome"),
+                @"C:\Program Files\Chrome",
+                @"C:\Program Files (x86)\Chrome"
             };
 
-            // Quick check in common locations
+            // Quick check in common locations first
             foreach (var path in commonPaths)
             {
                 if (Directory.Exists(path))
@@ -107,19 +104,19 @@ namespace AppDownloader.Apps
                 }
             }
 
-            // Deep search in system drives if not found in common locations
+            // Deep search if not found in common locations
             try
             {
                 string[] drives = Directory.GetLogicalDrives();
                 int totalDrives = drives.Length;
-
+                
                 for (int i = 0; i < totalDrives; i++)
                 {
                     string drive = drives[i];
                     if (!Directory.Exists(drive)) continue;
 
                     progressCallback?.Invoke((i * 100) / totalDrives);
-
+                    
                     if (QuickSearchInDrive(drive, executableName))
                     {
                         progressCallback?.Invoke(100);
@@ -137,12 +134,12 @@ namespace AppDownloader.Apps
             return false;
         }
 
-        // Method to perform a quick search in a drive
+        // Efficient directory search implementation using queue
         private bool QuickSearchInDrive(string drivePath, string executableName)
         {
-            // Perform a quick search in the drive
             try
             {
+                // Initialize search queue with drive path
                 var searchQueue = new Queue<string>();
                 searchQueue.Enqueue(drivePath);
 
@@ -151,15 +148,18 @@ namespace AppDownloader.Apps
                     string currentPath = searchQueue.Dequeue();
                     string execPath = Path.Combine(currentPath, executableName);
 
+                    // Check if executable exists in current directory
                     if (File.Exists(execPath))
                     {
                         return true;
                     }
 
+                    // Add subdirectories to search queue, skipping system folders
                     try
                     {
                         foreach (string dir in Directory.GetDirectories(currentPath))
                         {
+                            // Skip Windows and Recycle Bin folders for efficiency
                             if (!dir.Contains("Windows") && !dir.Contains("$Recycle.Bin"))
                             {
                                 searchQueue.Enqueue(dir);

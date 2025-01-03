@@ -6,13 +6,13 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class PowerToys
+    public class JetBrainsToolbox
     {
         // Name of the program
-        private const string ProgramName = "PowerToys";
-        private const string ExecutableName = "PowerToys.exe";
-        private const string DownloadUrl = "https://github.com/microsoft/PowerToys/releases/download/v0.68.0/PowerToysSetup-0.68.0-x64.exe";
-        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "PowerToysSetup-0.68.0-x64.exe");
+        private const string ProgramName = "JetBrainsToolbox";
+        private const string ExecutableName = "jetbrains-toolbox*.exe";
+        private const string DownloadUrl = "https://www.jetbrains.com/toolbox-app/download/download-thanks.html?platform=windows";
+        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "jetbrains-toolbox.exe");
         
         // Check if the program is installed
         public bool IsInstalled()
@@ -87,10 +87,10 @@ namespace AppDownloader.Apps
             // Define common paths to search for the executable file
             var commonPaths = new List<string>
             {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PowerToys"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PowerToys"),
-                @"C:\Program Files\PowerToys",
-                @"C:\Program Files (x86)\PowerToys"
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JetBrains"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JetBrains"),
+                @"C:\Program Files\JetBrains",
+                @"C:\Program Files (x86)\JetBrains"
             };
 
             // Quick check in common locations

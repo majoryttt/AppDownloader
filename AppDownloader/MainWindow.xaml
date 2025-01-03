@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:AppDownloader"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1280"
+        MinHeight="600" MinWidth="800"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None">
     <Window.Resources>
@@ -72,7 +73,7 @@
                 </Path>
             </Button>
         </StackPanel>
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
         <!-- Programs list with separators -->
         <Grid Margin="20">
             <Grid.ColumnDefinitions>
@@ -81,6 +82,9 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -99,49 +103,63 @@
             <!-- Separator after headers -->
             <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Height="1" Fill="White" VerticalAlignment="Bottom" Margin="5,0,5,0" Opacity="0.5"/>
 
+            <!-- Chrome -->
+            <TextBlock Text="Chrome" Grid.Row="1" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="ChromeStatus" Grid.Row="1" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="ChromeCheckBox" Grid.Row="1" Grid.Column="2" Margin="0,10"/>
+            
             <!-- Discord -->
-            <TextBlock Text="Discord" Grid.Row="1" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="DiscordStatus" Grid.Row="1" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
-            <CheckBox x:Name="DiscordCheckBox" Grid.Row="1" Grid.Column="2" Margin="0,10"/>
+            <TextBlock Text="Discord" Grid.Row="2" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="DiscordStatus" Grid.Row="2" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="DiscordCheckBox" Grid.Row="2" Grid.Column="2" Margin="0,10"/>
 
             <!-- Telegram -->
-            <TextBlock Text="Telegram" Grid.Row="2" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="TelegramStatus" Grid.Row="2" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
-            <CheckBox x:Name="TelegramCheckBox" Grid.Row="2" Grid.Column="2" Margin="0,10"/>
+            <TextBlock Text="Telegram" Grid.Row="3" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="TelegramStatus" Grid.Row="3" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="TelegramCheckBox" Grid.Row="3" Grid.Column="2" Margin="0,10"/>
             
             <!-- Steam -->
-            <TextBlock Text="Steam" Grid.Row="3" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="SteamStatus" Grid.Row="3" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
-            <CheckBox x:Name="SteamCheckBox" Grid.Row="3" Grid.Column="2" Margin="0,10"/>
+            <TextBlock Text="Steam" Grid.Row="4" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="SteamStatus" Grid.Row="4" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="SteamCheckBox" Grid.Row="4" Grid.Column="2" Margin="0,10"/>
 
             <!-- Epic Games -->
-            <TextBlock Text="Epic Games" Grid.Row="4" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="EpicStatus" Grid.Row="4" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
-            <CheckBox x:Name="EpicCheckBox" Grid.Row="4" Grid.Column="2" Margin="0,10"/>
+            <TextBlock Text="Epic Games" Grid.Row="5" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="EpicStatus" Grid.Row="5" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="EpicCheckBox" Grid.Row="5" Grid.Column="2" Margin="0,10"/>
             
             <!-- DeepL -->
-            <TextBlock Text="DeepL" Grid.Row="5" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="DeepLStatus" Grid.Row="5" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
-            <CheckBox x:Name="DeepLCheckBox" Grid.Row="5" Grid.Column="2" Margin="0,10"/>
+            <TextBlock Text="DeepL" Grid.Row="6" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="DeepLStatus" Grid.Row="6" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="DeepLCheckBox" Grid.Row="6" Grid.Column="2" Margin="0,10"/>
             
             <!-- NekoBox -->
-            <TextBlock Text="NekoBox" Grid.Row="6" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="NekoBoxStatus" Grid.Row="6" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
-            <CheckBox x:Name="NekoBoxCheckBox" Grid.Row="6" Grid.Column="2" Margin="0,10"/>
+            <TextBlock Text="NekoBox" Grid.Row="7" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="NekoBoxStatus" Grid.Row="7" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="NekoBoxCheckBox" Grid.Row="7" Grid.Column="2" Margin="0,10"/>
             
             <!-- PowerToys -->
-            <TextBlock Text="PowerToys" Grid.Row="7" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="PowerToysStatus" Grid.Row="7" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
-            <CheckBox x:Name="PowerToysCheckBox" Grid.Row="7" Grid.Column="2" Margin="0,10"/>
+            <TextBlock Text="PowerToys" Grid.Row="8" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="PowerToysStatus" Grid.Row="8" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="PowerToysCheckBox" Grid.Row="8" Grid.Column="2" Margin="0,10"/>
+            
+            <!-- JetBrainsToolbox -->
+            <TextBlock Text="JetBrains Toolbox" Grid.Row="9" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="JetBrainsToolboxStatus" Grid.Row="9" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="JetBrainsToolboxCheckBox" Grid.Row="9" Grid.Column="2" Margin="0,10"/>
+            
+            <!-- SteelSeriesGG -->
+            <TextBlock Text="SteelSeries GG" Grid.Row="10" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
+            <TextBlock x:Name="SteelSeriesGgStatus" Grid.Row="10" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown"/>
+            <CheckBox x:Name="SteelSeriesGgCheckBox" Grid.Row="10" Grid.Column="2" Margin="0,10"/>
             
         </Grid>
-    </ScrollViewer>    
-
-        <!-- Buttons at the bottom -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
-            <Button Content="Check Status" Click="CheckStatus_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
-            <Button Content="Install Selected" Click="InstallSelected_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
-            <Button Content="Select Not Installed" Click="SelectNotInstalled_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
-        </StackPanel>
-    </Grid>
+    </ScrollViewer>
+    <!-- Buttons -->
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Button Content="Check Status" Click="CheckStatus_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
+        <Button Content="Install Selected" Click="InstallSelected_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
+        <Button Content="Select Not Installed" Click="SelectNotInstalled_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
+    </StackPanel>
+</Grid>
 </Window>

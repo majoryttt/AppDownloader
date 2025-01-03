@@ -11,7 +11,7 @@ namespace AppDownloader.Apps
         private const string ProgramName = "NekoBox";
         private const string ExecutableName = "nekobox.exe";
         private const string DownloadUrl = "https://github.com/MatsuriDayo/nekoray/releases/download/4.0.1/nekoray-4.0.1-2024-12-12-windows64.zip";
-        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "nekoray-4.0.1-2024-12-12-windows64.zip");
+        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "nekoray.zip");
 
         public bool IsInstalled()
         {
@@ -28,11 +28,18 @@ namespace AppDownloader.Apps
 
         public void Install()
         {
-            Process process = new Process();
-            process.StartInfo.FileName = InstallerPath;
-            process.StartInfo.Arguments = "/silent";
-            process.Start();
-            process.WaitForExit();
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = InstallerPath,
+                Arguments = "/S", // Silent install
+                UseShellExecute = true,
+                Verb = "runas" // Run as administrator
+            };
+        
+            using (var process = Process.Start(startInfo))
+            {
+                process?.WaitForExit();
+            }
         }
 
         private bool IsProgramInstalled(string programName)

@@ -6,7 +6,6 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    // Discord class
     public class Discord
     {
         private const string ProgramName = "Discord"; // Name of the program
@@ -14,13 +13,13 @@ namespace AppDownloader.Apps
         private const string DownloadUrl = "https://discord.com/api/download?platform=win"; // URL to download the installer
         private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "DiscordSetup.exe"); // Path to the installer file
 
-        // Method to check if the program is installed
+        // Check if the program is installed
         public bool IsInstalled()
         {
             return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
         }
 
-        // Method to download the program
+        // Download the program
         public void Download()
         {
             using (var client = new WebClient())
@@ -29,17 +28,23 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Method to install the program
+        // Install the program
         public void Install()
         {
-            Process process = new Process();
-            process.StartInfo.FileName = InstallerPath;
-            process.StartInfo.Arguments = "/silent";
-            process.Start();
-            process.WaitForExit();
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = InstallerPath,
+                Arguments = "/S", // Silent install
+                UseShellExecute = true,
+                Verb = "runas" // Run as administrator
+            };
+        
+            using (var process = Process.Start(startInfo))
+            {
+                process?.WaitForExit();
+            }
         }
 
-        // Method to check if the program is installed
         private bool IsProgramInstalled(string programName)
         {
             string[] registryPaths =
@@ -48,7 +53,6 @@ namespace AppDownloader.Apps
                 @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
             };
 
-            // Loop through the registry paths
             foreach (var registryPath in registryPaths)
             {
                 using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
@@ -74,10 +78,8 @@ namespace AppDownloader.Apps
             return false;
         }
 
-        // Method to find the executable file
         public bool FindProgramExecutable(string executableName, Action<int> progressCallback)
         {
-            // Define common paths to search for the executable file
             var commonPaths = new List<string>
             {
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Discord"),
@@ -86,7 +88,6 @@ namespace AppDownloader.Apps
                 @"C:\Program Files (x86)\Discord"
             };
 
-            // Quick check in common locations
             foreach (var path in commonPaths)
             {
                 if (Directory.Exists(path))
@@ -100,7 +101,6 @@ namespace AppDownloader.Apps
                 }
             }
 
-            // Deep search in system drives if not found in common locations
             try
             {
                 string[] drives = Directory.GetLogicalDrives();
@@ -130,10 +130,8 @@ namespace AppDownloader.Apps
             return false;
         }
 
-        // Method to perform a quick search in a drive
         private bool QuickSearchInDrive(string drivePath, string executableName)
         {
-            // Perform a quick search in the drive
             try
             {
                 var searchQueue = new Queue<string>();

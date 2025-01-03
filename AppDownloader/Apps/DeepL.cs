@@ -11,7 +11,7 @@ namespace AppDownloader.Apps
         // Constants for DeepL application
         private const string ProgramName = "DeepL";
         private const string ExecutableName = "DeepL.exe";
-        private const string DownloadUrl = "https://appdownload.deepl.com/windows/full/DeepLSetup.exe";
+        private const string DownloadUrl = "https://appdownload.deepl.com/windows/0install/DeepLSetup.exe";
         private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "DeepLSetup.exe");
 
         // Check if DeepL is installed using file search or registry
@@ -32,11 +32,18 @@ namespace AppDownloader.Apps
         // Install DeepL silently using downloaded installer
         public void Install()
         {
-            Process process = new Process();
-            process.StartInfo.FileName = InstallerPath;
-            process.StartInfo.Arguments = "/silent"; // Silent installation
-            process.Start();
-            process.WaitForExit();
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = InstallerPath,
+                Arguments = "/S", // Silent install
+                UseShellExecute = true,
+                Verb = "runas" // Run as administrator
+            };
+        
+            using (var process = Process.Start(startInfo))
+            {
+                process?.WaitForExit();
+            }
         }
 
         // Check Windows Registry for DeepL installation

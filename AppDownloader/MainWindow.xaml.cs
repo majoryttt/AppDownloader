@@ -135,9 +135,9 @@ public partial class MainWindow : Window
                 });
                 DiscordStatus.Text = "Installed";
             }
-            catch
+            catch (Exception ex)
             {
-                DiscordStatus.Text = "Error";
+                DiscordStatus.Text = $"Error: {ex.Message}";
             }
         }
         
@@ -153,9 +153,9 @@ public partial class MainWindow : Window
                 });
                 TelegramStatus.Text = "Installed";
             }
-            catch
+            catch (Exception ex)
             {
-                TelegramStatus.Text = "Error";
+                TelegramStatus.Text = $"Error: {ex.Message}";
             }
         }
 
@@ -171,9 +171,9 @@ public partial class MainWindow : Window
                 });
                 SteamStatus.Text = "Installed";
             }
-            catch
+            catch (Exception ex)
             {
-                SteamStatus.Text = "Error";
+                SteamStatus.Text = $"Error: {ex.Message}";
             }
         }
 
@@ -189,9 +189,9 @@ public partial class MainWindow : Window
                 });
                 EpicStatus.Text = "Installed";
             }
-            catch
+            catch (Exception ex)
             {
-                EpicStatus.Text = "Error";
+                EpicStatus.Text = $"Error: {ex.Message}";
             }
         }
 
@@ -207,9 +207,9 @@ public partial class MainWindow : Window
                 });
                 DeepLStatus.Text = "Installed";
             }
-            catch
+            catch (Exception ex)
             {
-                DeepLStatus.Text = "Error";
+                DeepLStatus.Text = $"Error: {ex.Message}";
             }
         }
 
@@ -225,9 +225,9 @@ public partial class MainWindow : Window
                 });
                 NekoBoxStatus.Text = "Installed";
             }
-            catch
+            catch (Exception ex)
             {
-                NekoBoxStatus.Text = "Error";
+                NekoBoxStatus.Text = $"Error: {ex.Message}";
             }
         }
 
@@ -243,9 +243,9 @@ public partial class MainWindow : Window
                 });
                 PowerToysStatus.Text = "Installed";
             }
-            catch
+            catch (Exception ex)
             {
-                PowerToysStatus.Text = "Error";
+                PowerToysStatus.Text = $"Error: {ex.Message}";
             }
         }
     }

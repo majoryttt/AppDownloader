@@ -13,14 +13,14 @@ namespace AppDownloader.Apps
         private const string ExecutableName = "Steam.exe";
         private const string DownloadUrl = "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe";
         private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "SteamSetup.exe");
-
-        // Check if Steam is installed using file search or registry
+        
+        // Check if the program is installed
         public bool IsInstalled()
         {
             return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
         }
 
-        // Download Steam installer from official source
+        // Download the program
         public void Download()
         {
             using (var client = new WebClient())
@@ -29,14 +29,21 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Install Steam silently using downloaded installer
+        // Install the program
         public void Install()
         {
-            Process process = new Process();
-            process.StartInfo.FileName = InstallerPath;
-            process.StartInfo.Arguments = "/S"; // Silent installation
-            process.Start();
-            process.WaitForExit();
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = InstallerPath,
+                Arguments = "/S", // Silent install
+                UseShellExecute = true,
+                Verb = "runas" // Run as administrator
+            };
+        
+            using (var process = Process.Start(startInfo))
+            {
+                process?.WaitForExit();
+            }
         }
 
         // Check Windows Registry for Steam installation

@@ -13,14 +13,14 @@ namespace AppDownloader.Apps
         private const string ExecutableName = "EpicGamesLauncher.exe";
         private const string DownloadUrl = "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi";
         private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "EpicInstaller.msi");
-
-        // Check if Epic Games is installed using file search or registry
+        
+        // Check if the program is installed
         public bool IsInstalled()
         {
             return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
         }
 
-        // Download Epic Games installer from official source
+        // Download the program
         public void Download()
         {
             using (var client = new WebClient())
@@ -29,14 +29,21 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Install Epic Games silently using MSI installer
+        // Install the program
         public void Install()
         {
-            Process process = new Process();
-            process.StartInfo.FileName = "msiexec.exe";
-            process.StartInfo.Arguments = $"/i \"{InstallerPath}\" /quiet"; // Silent MSI installation
-            process.Start();
-            process.WaitForExit();
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = InstallerPath,
+                Arguments = "/S", // Silent install
+                UseShellExecute = true,
+                Verb = "runas" // Run as administrator
+            };
+        
+            using (var process = Process.Start(startInfo))
+            {
+                process?.WaitForExit();
+            }
         }
 
         // Check Windows Registry for Epic Games installation

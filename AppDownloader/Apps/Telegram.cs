@@ -6,21 +6,20 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    // Telegram class
     public class Telegram
     {
         private const string ProgramName = "Telegram"; // Name of the program
         private const string ExecutableName = "Telegram.exe"; // Name of the executable file
         private const string DownloadUrl = "https://github.com/telegramdesktop/tdesktop/releases/download/v5.9.0/tsetup-x64.5.9.0.exe"; // URL to download the installer
-        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "tsetup-x64.5.9.0.exe"); // Path to the installer file
+        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "tsetup.exe"); // Path to the installer file
 
-        // Method to check if the program is installed
+        // Check if the program is installed
         public bool IsInstalled()
         {
             return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
         }
 
-        // Method to download the program
+        // Download the program
         public void Download()
         {
             using (var client = new WebClient())
@@ -29,14 +28,21 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Method to install the program
+        // Install the program
         public void Install()
         {
-            Process process = new Process();
-            process.StartInfo.FileName = InstallerPath;
-            process.StartInfo.Arguments = "/silent";
-            process.Start();
-            process.WaitForExit();
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = InstallerPath,
+                Arguments = "/S", // Silent install
+                UseShellExecute = true,
+                Verb = "runas" // Run as administrator
+            };
+        
+            using (var process = Process.Start(startInfo))
+            {
+                process?.WaitForExit();
+            }
         }
 
         // Method to check if the program is installed

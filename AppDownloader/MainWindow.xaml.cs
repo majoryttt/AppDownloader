@@ -18,6 +18,7 @@ public partial class MainWindow : Window
     private readonly PowerToys _powerToys;
     private readonly JetBrainsToolbox _jetBrainsToolbox;
     private readonly SteelSeriesGG _steelSeriesGG;
+    private readonly Materialgram _materialgram;
 
     public MainWindow()
     {
@@ -33,6 +34,7 @@ public partial class MainWindow : Window
         _powerToys = new PowerToys();
         _jetBrainsToolbox = new JetBrainsToolbox();
         _steelSeriesGG = new SteelSeriesGG();
+        _materialgram = new Materialgram();
     }
     // Main function
     // DragZone
@@ -139,6 +141,14 @@ public partial class MainWindow : Window
                     var result = _steelSeriesGG.FindProgramExecutable("SteelSeries.exe",
                         progress => Dispatcher.Invoke(() => SteelSeriesGgStatus.Text = $"Checking... {progress}%"));
                     Dispatcher.Invoke(() => SteelSeriesGgStatus.Text = result ? "Installed" : "Not Installed");
+                }),
+                
+                Task.Run(() =>
+                {
+                    Dispatcher.Invoke(() => MaterialgramStatus.Text = "Checking... 0%");
+                    var result = _materialgram.FindProgramExecutable("MaterialGames.exe",
+                        progress => Dispatcher.Invoke(() => MaterialgramStatus.Text = $"Checking... {progress}%"));
+                    Dispatcher.Invoke(() => MaterialgramStatus.Text = result ? "Installed" : "Not Installed");
                 }),
             };
 
@@ -331,6 +341,23 @@ public partial class MainWindow : Window
                 SteelSeriesGgStatus.Text = $"Error: {ex.Message}";
             }
         }
+
+        if (MaterialgramCheckBox.IsChecked == true && !_materialgram.IsInstalled())
+        {
+            try
+            {
+                MaterialgramStatus.Text = "Installing...";
+                await Task.Run(() =>
+                {
+                    _materialgram.Download();
+                    _materialgram.Install();
+                });
+            }
+            catch (Exception ex)
+            {
+                MaterialgramStatus.Text = $"Error: {ex.Message}";
+            }
+        }
     }
 
     // SelectNotInstalled
@@ -365,5 +392,8 @@ public partial class MainWindow : Window
         
         if (SteelSeriesGgStatus.Text == "Not Installed")
             SteelSeriesGgCheckBox.IsChecked = true;
+        
+        if (MaterialgramStatus.Text == "Not Installed")
+            MaterialgramCheckBox.IsChecked = true;
     }
 }

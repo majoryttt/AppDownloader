@@ -8,19 +8,19 @@ namespace AppDownloader.Apps
 {
     public class Chrome : IApp
     {
-        // Constants for DeepL application
+        // Constants for Chrome application
         private const string ProgramName = "Chrome";
         private const string ExecutableName = "chrome.exe";
         private const string DownloadUrl = "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B416DC6D3-8AD8-9476-8690-5A5C5C97A3FF%7D%26lang%3Den%26browser%3D4%26usagestats%3D1%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-statsdef_1%26brand%3DJJTC%26installdataindex%3Dempty/update2/installers/ChromeSetup.exe";
         private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "ChromeSetup.exe");
 
-        // Check if DeepL is installed using file search or registry
+        // Check if Chrome is installed using file search or registry
         public bool IsInstalled()
         {
             return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
         }
 
-        // Download DeepL installer from official source
+        // Download Chrome installer from official source
         public void Download()
         {
             using (var client = new WebClient())
@@ -29,7 +29,7 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Install DeepL silently using downloaded installer
+        // Install Chrome silently using downloaded installer
         public void Install()
         {
             var startInfo = new ProcessStartInfo
@@ -46,7 +46,7 @@ namespace AppDownloader.Apps
             }
         }
 
-        // Check Windows Registry for DeepL installation
+        // Check Windows Registry for Chrome installation
         private bool IsProgramInstalled(string programName)
         {
             string[] registryPaths = {
@@ -78,7 +78,7 @@ namespace AppDownloader.Apps
             return false;
         }
 
-        // Search for DeepL executable with progress tracking
+        // Search for Chrome executable with progress tracking
         public bool FindProgramExecutable(string executableName, Action<int> progressCallback)
         {
             // Common DeepL installation paths

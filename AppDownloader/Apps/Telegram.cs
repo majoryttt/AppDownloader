@@ -6,7 +6,7 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class Telegram
+    public class Telegram: IApp
     {
         private const string ProgramName = "Telegram"; // Name of the program
         private const string ExecutableName = "Telegram.exe"; // Name of the executable file

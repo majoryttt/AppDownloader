@@ -6,7 +6,7 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class Obsidian
+    public class Obsidian: IApp
     {
         private const string ProgramName = "Obsidian";
         private const string ExecutableName = "Obsidian.exe";

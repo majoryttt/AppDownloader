@@ -6,7 +6,7 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class Steam
+    public class Steam: IApp
     {
         // Constants for Steam application
         private const string ProgramName = "Steam";

@@ -6,7 +6,7 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class Chrome
+    public class Chrome : IApp
     {
         // Constants for DeepL application
         private const string ProgramName = "Chrome";

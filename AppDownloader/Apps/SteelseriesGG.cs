@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace AppDownloader.Apps
 {
-    public class SteelSeriesGG
+    public class SteelSeriesGG: IApp
     {
         private const string ProgramName = "SteelSeries GG";
         private const string ExecutableName = "SteelSeriesGG.exe";

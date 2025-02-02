@@ -6,7 +6,7 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class PowerToys
+    public class PowerToys: IApp
     {
         // Name of the program
         private const string ProgramName = "PowerToys";

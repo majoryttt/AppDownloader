@@ -6,14 +6,18 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class EpicGames
+    public class EpicGames : IApp
+
     {
         // Constants for Epic Games Launcher
         private const string ProgramName = "Epic Games Launcher";
         private const string ExecutableName = "EpicGamesLauncher.exe";
-        private const string DownloadUrl = "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi";
+
+        private const string DownloadUrl =
+            "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi";
+
         private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "EpicInstaller.msi");
-        
+
         // Check if the program is installed
         public bool IsInstalled()
         {
@@ -45,10 +49,12 @@ namespace AppDownloader.Apps
                 process?.WaitForExit();
             }
         }
+
         // Check Windows Registry for Epic Games installation
         private bool IsProgramInstalled(string programName)
         {
-            string[] registryPaths = {
+            string[] registryPaths =
+            {
                 @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
                 @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
             };
@@ -64,7 +70,7 @@ namespace AppDownloader.Apps
                             using (RegistryKey subkey = key.OpenSubKey(subkeyName))
                             {
                                 string displayName = subkey?.GetValue("DisplayName") as string;
-                                if (!string.IsNullOrEmpty(displayName) && 
+                                if (!string.IsNullOrEmpty(displayName) &&
                                     displayName.Contains(programName, StringComparison.OrdinalIgnoreCase))
                                 {
                                     return true;
@@ -74,6 +80,7 @@ namespace AppDownloader.Apps
                     }
                 }
             }
+
             return false;
         }
 
@@ -87,7 +94,8 @@ namespace AppDownloader.Apps
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Epic Games"),
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles), "Epic Games"),
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "Epic Games"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "EpicGamesLauncher")
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "EpicGamesLauncher")
             };
 
             // Quick check in common locations first
@@ -104,14 +112,14 @@ namespace AppDownloader.Apps
             {
                 string[] drives = Directory.GetLogicalDrives();
                 int totalDrives = drives.Length;
-                
+
                 for (int i = 0; i < totalDrives; i++)
                 {
                     string drive = drives[i];
                     if (!Directory.Exists(drive)) continue;
 
                     progressCallback?.Invoke((i * 100) / totalDrives);
-                    
+
                     if (QuickSearchInDrive(drive, executableName))
                     {
                         progressCallback?.Invoke(100);

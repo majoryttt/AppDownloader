@@ -6,168 +6,172 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class NekoBox
+    public class NekoBox: IApp
+
     {
-        private const string ProgramName = "NekoBox";
-        private const string ExecutableName = "nekobox.exe";
-        private const string DownloadUrl = "https://github.com/MatsuriDayo/nekoray/releases/download/4.0.1/nekoray-4.0.1-2024-12-12-windows64.zip";
-        private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "nekoray-4.0.1-2024-12-12-windows64.zip");
+    private const string ProgramName = "NekoBox";
+    private const string ExecutableName = "nekobox.exe";
 
-        public bool IsInstalled()
+    private const string DownloadUrl =
+        "https://github.com/MatsuriDayo/nekoray/releases/download/4.0.1/nekoray-4.0.1-2024-12-12-windows64.zip";
+
+    private readonly string InstallerPath = Path.Combine(Path.GetTempPath(), "nekoray-4.0.1-2024-12-12-windows64.zip");
+
+    public bool IsInstalled()
+    {
+        return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
+    }
+
+    public void Download()
+    {
+        using (var client = new WebClient())
         {
-            return FindProgramExecutable(ExecutableName, null) || IsProgramInstalled(ProgramName);
+            client.DownloadFile(DownloadUrl, InstallerPath);
         }
+    }
 
-        public void Download()
+    public void Install()
+    {
+        var startInfo = new ProcessStartInfo
         {
-            using (var client = new WebClient())
-            {
-                client.DownloadFile(DownloadUrl, InstallerPath);
-            }
+            FileName = InstallerPath,
+            Arguments = "/S", // Silent install
+            UseShellExecute = true,
+            Verb = "runas" // Run as administrator
+        };
+
+        using (var process = Process.Start(startInfo))
+        {
+            process?.WaitForExit();
         }
+    }
 
-        public void Install()
+    private bool IsProgramInstalled(string programName)
+    {
+        string[] registryPaths =
         {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = InstallerPath,
-                Arguments = "/S", // Silent install
-                UseShellExecute = true,
-                Verb = "runas" // Run as administrator
-            };
-        
-            using (var process = Process.Start(startInfo))
-            {
-                process?.WaitForExit();
-            }
-        }
+            @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+            @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+        };
 
-        private bool IsProgramInstalled(string programName)
+        foreach (var registryPath in registryPaths)
         {
-            string[] registryPaths =
+            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
             {
-                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
-                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
-            };
-
-            foreach (var registryPath in registryPaths)
-            {
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
+                if (key != null)
                 {
-                    if (key != null)
+                    foreach (string subkeyName in key.GetSubKeyNames())
                     {
-                        foreach (string subkeyName in key.GetSubKeyNames())
+                        using (RegistryKey subkey = key.OpenSubKey(subkeyName))
                         {
-                            using (RegistryKey subkey = key.OpenSubKey(subkeyName))
+                            string displayName = subkey?.GetValue("DisplayName") as string;
+                            if (!string.IsNullOrEmpty(displayName) &&
+                                displayName.Contains(programName, StringComparison.OrdinalIgnoreCase))
                             {
-                                string displayName = subkey?.GetValue("DisplayName") as string;
-                                if (!string.IsNullOrEmpty(displayName) &&
-                                    displayName.Contains(programName, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
                         }
                     }
                 }
             }
-
-            return false;
         }
 
-        public bool FindProgramExecutable(string executableName, Action<int> progressCallback)
+        return false;
+    }
+
+    public bool FindProgramExecutable(string executableName, Action<int> progressCallback)
+    {
+        var commonPaths = new List<string>
         {
-            var commonPaths = new List<string>
-            {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NekoBox"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NekoBox"),
-                @"C:\Program Files\NekoBox",
-                @"C:\Program Files (x86)\NekoBox"
-            };
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NekoBox"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NekoBox"),
+            @"C:\Program Files\NekoBox",
+            @"C:\Program Files (x86)\NekoBox"
+        };
 
-            // Quick check in common locations
-            foreach (var path in commonPaths)
+        // Quick check in common locations
+        foreach (var path in commonPaths)
+        {
+            if (Directory.Exists(path))
             {
-                if (Directory.Exists(path))
+                string execPath = Path.Combine(path, executableName);
+                if (File.Exists(execPath))
                 {
-                    string execPath = Path.Combine(path, executableName);
-                    if (File.Exists(execPath))
-                    {
-                        progressCallback?.Invoke(100);
-                        return true;
-                    }
+                    progressCallback?.Invoke(100);
+                    return true;
                 }
             }
+        }
 
-            // Deep search in system drives if not found in common locations
-            try
+        // Deep search in system drives if not found in common locations
+        try
+        {
+            string[] drives = Directory.GetLogicalDrives();
+            int totalDrives = drives.Length;
+
+            for (int i = 0; i < totalDrives; i++)
             {
-                string[] drives = Directory.GetLogicalDrives();
-                int totalDrives = drives.Length;
+                string drive = drives[i];
+                if (!Directory.Exists(drive)) continue;
 
-                for (int i = 0; i < totalDrives; i++)
+                progressCallback?.Invoke((i * 100) / totalDrives);
+
+                if (QuickSearchInDrive(drive, executableName))
                 {
-                    string drive = drives[i];
-                    if (!Directory.Exists(drive)) continue;
-
-                    progressCallback?.Invoke((i * 100) / totalDrives);
-
-                    if (QuickSearchInDrive(drive, executableName))
-                    {
-                        progressCallback?.Invoke(100);
-                        return true;
-                    }
+                    progressCallback?.Invoke(100);
+                    return true;
                 }
             }
-            catch (Exception)
-            {
-                progressCallback?.Invoke(100);
-                return false;
-            }
-
+        }
+        catch (Exception)
+        {
             progressCallback?.Invoke(100);
             return false;
         }
 
-        private bool QuickSearchInDrive(string drivePath, string executableName)
+        progressCallback?.Invoke(100);
+        return false;
+    }
+
+    private bool QuickSearchInDrive(string drivePath, string executableName)
+    {
+        try
         {
-            try
+            var searchQueue = new Queue<string>();
+            searchQueue.Enqueue(drivePath);
+
+            while (searchQueue.Count > 0)
             {
-                var searchQueue = new Queue<string>();
-                searchQueue.Enqueue(drivePath);
+                string currentPath = searchQueue.Dequeue();
+                string execPath = Path.Combine(currentPath, executableName);
 
-                while (searchQueue.Count > 0)
+                if (File.Exists(execPath))
                 {
-                    string currentPath = searchQueue.Dequeue();
-                    string execPath = Path.Combine(currentPath, executableName);
+                    return true;
+                }
 
-                    if (File.Exists(execPath))
+                try
+                {
+                    foreach (string dir in Directory.GetDirectories(currentPath))
                     {
-                        return true;
-                    }
-
-                    try
-                    {
-                        foreach (string dir in Directory.GetDirectories(currentPath))
+                        if (!dir.Contains("Windows") && !dir.Contains("$Recycle.Bin"))
                         {
-                            if (!dir.Contains("Windows") && !dir.Contains("$Recycle.Bin"))
-                            {
-                                searchQueue.Enqueue(dir);
-                            }
+                            searchQueue.Enqueue(dir);
                         }
                     }
-                    catch (UnauthorizedAccessException)
-                    {
-                        continue;
-                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    continue;
                 }
             }
-            catch (Exception)
-            {
-                return false;
-            }
-
+        }
+        catch (Exception)
+        {
             return false;
         }
+
+        return false;
+    }
     }
 }

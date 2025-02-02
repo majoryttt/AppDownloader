@@ -3,13 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AppDownloader"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1280"
+        xmlns:controls="clr-namespace:AppDownloader.Controls"
+        Title="AppDownloader" Height="800" Width="1280"
         MinHeight="600" MinWidth="800"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None">
+
     <Window.Resources>
+        <Style x:Key="HeaderTextStyleLeft" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="0,10"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style x:Key="HeaderTextStyleCenter" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="0,10"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
         <Style TargetType="Button">
             <Setter Property="Background">
                 <Setter.Value>
@@ -17,16 +33,18 @@
                         <GradientStop Color="#EC62C9" Offset="1.0" />
                         <GradientStop Color="#004D40" Offset="0.0" />
                     </LinearGradientBrush>
-                    
                 </Setter.Value>
             </Setter>
             <Setter Property="Foreground" Value="White" />
             <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="150" />
+            <Setter Property="Height" Value="50" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="10">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                     </ControlTemplate>
@@ -34,137 +52,67 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <!-- Define the window background gradient -->
+
     <Window.Background>
-        <!-- Define the gradient colors -->
         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
             <GradientStop Color="#EC62C9" Offset="0.0" />
             <GradientStop Color="#004D40" Offset="1.0" />
         </LinearGradientBrush>
     </Window.Background>
-    <!-- Define the window content -->
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="60" />
         </Grid.RowDefinitions>
 
-        <!-- Title bar content remains the same -->
-        <Rectangle x:Name="DragZone" Height="10" VerticalAlignment="Top" Fill="Transparent" MouseLeftButtonDown="DragZone_MouseLeftButtonDown" />
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Panel.ZIndex="1">
-            <!-- Add a maximize button --> 
-            <Button x:Name="MaximizeButton" Width="45" Height="30" Click="MaximizeButton_Click" Background="Transparent" BorderThickness="0">
-                <Path Data="M0,1 C0,0.4 0.4,0 1,0 L7,0 C7.6,0 8,0.4 8,1 L8,7 C8,7.6 7.6,8 7,8 L1,8 C0.4,8 0,7.6 0,7 Z" Stroke="White" StrokeThickness="1" />
-            </Button>
-            <!-- Add a close button -->
-            <Button x:Name="CloseButton" Width="45" Height="30" Click="CloseButton_Click" Background="Transparent" BorderThickness="0">
-                <!-- Add a path for the close button --> 
-                <Path StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M0,0 L8,8 M0,8 L8,0" Stroke="White" StrokeThickness="1.5"> 
-                    <Path.Style>
-                        <Style TargetType="Path">
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Stroke" Value="#FF5555" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Path.Style>
-                </Path>
-            </Button>
-        </StackPanel>
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
-        <!-- Programs list with separators -->
-        <Grid Margin="20">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <!-- Headers -->
-            <TextBlock Text="Program" Grid.Column="0" Foreground="White" FontWeight="Bold" FontSize="16" Margin="0,10"/>
-            <TextBlock Text="Status" Grid.Column="1" Foreground="White" FontWeight="Bold" FontSize="16" Margin="0,10"/>
-            <TextBlock Text="Install" Grid.Column="2" Foreground="White" FontWeight="Bold" FontSize="16" Margin="0,10"/>
-
-            <!-- Separator after headers -->
-            <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Height="1" Fill="White" VerticalAlignment="Bottom" Margin="5,0,5,0" Opacity="0.5"/>
-
-            <!-- Chrome -->
-            <TextBlock Text="Chrome" Grid.Row="1" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="ChromeStatus" Grid.Row="1" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="ChromeCheckBox" Grid.Row="1" Grid.Column="2" Margin="0,10"/>
-            
-            <!-- Discord -->
-            <TextBlock Text="Discord" Grid.Row="2" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="DiscordStatus" Grid.Row="2" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="DiscordCheckBox" Grid.Row="2" Grid.Column="2" Margin="0,10"/>
-
-            <!-- Telegram -->
-            <TextBlock Text="Telegram" Grid.Row="3" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="TelegramStatus" Grid.Row="3" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="TelegramCheckBox" Grid.Row="3" Grid.Column="2" Margin="0,10"/>
-            
-            <!-- Materialgram -->
-            <TextBlock Text="Materialgram" Grid.Row="4" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="MaterialgramStatus" Grid.Row="4" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="MaterialgramCheckBox" Grid.Row="4" Grid.Column="2" Margin="0,10"/>
-            
-            <!-- Steam -->
-            <TextBlock Text="Steam" Grid.Row="5" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="SteamStatus" Grid.Row="5" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="SteamCheckBox" Grid.Row="5" Grid.Column="2" Margin="0,10"/>
-
-            <!-- Epic Games -->
-            <TextBlock Text="Epic Games" Grid.Row="6" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="EpicStatus" Grid.Row="6" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="EpicCheckBox" Grid.Row="6" Grid.Column="2" Margin="0,10"/>
-            
-            <!-- DeepL -->
-            <TextBlock Text="DeepL" Grid.Row="7" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="DeepLStatus" Grid.Row="7" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="DeepLCheckBox" Grid.Row="7" Grid.Column="2" Margin="0,10"/>
-            
-            <!-- NekoBox -->
-            <TextBlock Text="NekoBox" Grid.Row="8" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="NekoBoxStatus" Grid.Row="8" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="NekoBoxCheckBox" Grid.Row="8" Grid.Column="2" Margin="0,10"/>
-            
-            <!-- PowerToys -->
-            <TextBlock Text="PowerToys" Grid.Row="9" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="PowerToysStatus" Grid.Row="9" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="PowerToysCheckBox" Grid.Row="9" Grid.Column="2" Margin="0,10"/>
-            
-            <!-- JetBrainsToolbox -->
-            <TextBlock Text="JetBrains Toolbox" Grid.Row="10" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="JetBrainsToolboxStatus" Grid.Row="10" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="JetBrainsToolboxCheckBox" Grid.Row="10" Grid.Column="2" Margin="0,10"/>
-            
-            <!-- SteelSeriesGG -->
-            <TextBlock Text="SteelSeries GG" Grid.Row="11" Grid.Column="0" FontSize="14" Foreground="White" Margin="0,10"/>
-            <TextBlock x:Name="SteelSeriesGgStatus" Grid.Row="11" Grid.Column="1" FontSize="14" Foreground="White" Margin="0,10" Text="Unknown" TextWrapping="Wrap"/>
-            <CheckBox x:Name="SteelSeriesGgCheckBox" Grid.Row="11" Grid.Column="2" Margin="0,10"/>
+        <!-- Title Bar -->
+        <Grid Grid.Row="0">
+            <Rectangle x:Name="DragZone" Height="30" Fill="Transparent"
+                       MouseLeftButtonDown="DragZone_MouseLeftButtonDown" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="MaximizeButton" Width="45" Height="30"
+                        Click="MaximizeButton_Click" Background="Transparent">
+                    <Path
+                        Data="M0,1 C0,0.4 0.4,0 1,0 L7,0 C7.6,0 8,0.4 8,1 L8,7 C8,7.6 7.6,8 7,8 L1,8 C0.4,8 0,7.6 0,7 Z"
+                        Stroke="White" StrokeThickness="1" />
+                </Button>
+                <Button x:Name="CloseButton" Width="45" Height="30"
+                        Click="CloseButton_Click" Background="Transparent">
+                    <Path Data="M0,0 L8,8 M0,8 L8,0" Stroke="White"
+                          StrokeThickness="1.5" StrokeStartLineCap="Round"
+                          StrokeEndLineCap="Round" />
+                </Button>
+            </StackPanel>
         </Grid>
-    </ScrollViewer>
-    <!-- Buttons -->
-    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button Content="Check Status" Click="CheckStatus_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
-        <Button Content="Install Selected" Click="InstallSelected_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
-        <Button Content="Select Not Installed" Click="SelectNotInstalled_Click" Width="150" Height="50" Margin="5" FontSize="14"/>
-    </StackPanel>
-</Grid>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="20">
+            <StackPanel>
+                <!-- Headers -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Program" Style="{StaticResource HeaderTextStyleLeft}" />
+                    <TextBlock Text="Status" Grid.Column="1" Style="{StaticResource HeaderTextStyleLeft}" />
+                    <TextBlock Text="Install" Grid.Column="2" Style="{StaticResource HeaderTextStyleCenter}" />
+                </Grid>
+
+                <!-- Apps List -->
+                <controls:AppsList x:Name="AppsList" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Bottom Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="Check Status" Click="CheckStatus_Click" />
+            <Button Content="Install Selected" Click="InstallSelected_Click" />
+            <Button Content="Select Not Installed" Click="SelectNotInstalled_Click" />
+        </StackPanel>
+    </Grid>
 </Window>

@@ -6,7 +6,7 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class DeepL
+    public class DeepL: IApp
     {
         // Constants for DeepL application
         private const string ProgramName = "DeepL";

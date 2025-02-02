@@ -6,7 +6,7 @@ using Microsoft.Win32;
 
 namespace AppDownloader.Apps
 {
-    public class Materialgram
+    public class Materialgram: IApp
     {
         private const string ProgramName = "Materialgram";
         private const string ExecutableName = "materialgram.exe";
